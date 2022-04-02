@@ -26,8 +26,10 @@ def cubre_anterior(contrato, solucion):
     return cubrimiento_contrato <= cubrimiento_anterior
 
 def buscar_solucion(contratos, kilometros):
-    contratos_ordenados = sorted(contratos, key=lambda antena: (antena["pos"], antena["radio"])) # Se podría hacer inplace para ahorrar en memoria
+    # Ordeno por posicion, desempatando por mayor radio
+    contratos_ordenados = sorted(contratos, key=lambda antena: (antena["pos"], -antena["radio"]))
     solucion = [contratos_ordenados[0]]
+    posicion_actual = solucion[0]["pos"] + solucion[0]["radio"]
     quito_anterior = False
 
     for antena in contratos_ordenados[1:]:
@@ -35,8 +37,10 @@ def buscar_solucion(contratos, kilometros):
             quito_anterior = True
             solucion.pop()
         
-        if quito_anterior or antena["pos"] < kilometros:
+        if quito_anterior or (posicion_actual < kilometros and antena["pos"] + antena["radio"] > posicion_actual):
             solucion.append(antena)
+            posicion_actual = antena['pos'] + antena['radio']
+
         quito_anterior = False
 
     return solucion
