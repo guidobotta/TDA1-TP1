@@ -15,6 +15,6 @@ python3 solucion.py <kilometros> <ruta_archivo>
 Se pueden ejecutar una serie de pruebas con
 
 ```sh
-./chmod +x tests.sh
+chmod +x tests.sh
 ./tests.sh
 ```
