@@ -93,6 +93,6 @@ def main():
     if comprobar_solucion(solucion, kilometros):
         print(list(map(lambda x: x['nro'], solucion)))
     else:
-        print("No existe solución óptima.")
+        print("No existe solucion optima.")
 
 main()

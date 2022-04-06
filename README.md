@@ -9,3 +9,12 @@
 ```sh
 python3 solucion.py <kilometros> <ruta_archivo>
 ```
+
+## Tests
+
+Se pueden ejecutar una serie de pruebas con
+
+```sh
+./chmod +x tests.sh
+./tests.sh
+```
