@@ -1,20 +1,28 @@
 import sys
 
-def leer_contratos(ruta_archivo):
-    contratos = []
+def leer_antenas(ruta_archivo):
+    """
+    Recibe la ruta del archivo y devuelve una lista de antenas con el siguiente formato
+    [{"nro": int, "pos": int, "radio": int}]
+    """
+    antenas = []
 
     with open(ruta_archivo) as archivo:
         for linea in archivo:
             linea = linea.strip()
             nro, pos, radio = linea.split(',')
-            contratos.append({"nro": int(nro), "pos": int(pos), "radio": int(radio)})
+            antenas.append({"nro": int(nro), "pos": int(pos), "radio": int(radio)})
 
-    return contratos
+    return antenas
 
-def cubre_anterior(contrato, solucion):
+def cubre_anterior(antena, solucion):
+    """
+    Devuelve True si la antena recibida cubre en cobertura efectiva a la ultima antena
+    de la solucion o False en caso contrario.
+    """
     if not solucion: return False
     
-    cubrimiento_contrato = contrato["pos"] - contrato["radio"]
+    cubrimiento_antena = antena["pos"] - antena["radio"]
     cubrimiento_anterior = solucion[-1]["pos"] - solucion[-1]["radio"]
 
     if len(solucion) > 1 and solucion[-2]["pos"] + solucion[-2]["radio"] > cubrimiento_anterior:
@@ -23,16 +31,22 @@ def cubre_anterior(contrato, solucion):
     if cubrimiento_anterior < 0:
         cubrimiento_anterior = 0
 
-    return cubrimiento_contrato <= cubrimiento_anterior
+    return cubrimiento_antena <= cubrimiento_anterior
 
-def buscar_solucion(contratos, kilometros):
+def buscar_solucion(antenas, kilometros):
+    """
+    Recibe una lista de antenas y los kilometros de longitud de la ruta.
+    Devuelve la mejor solucion posible.
+    La solucion devuelta puede no ser optima. Es decir, puede que no cubra
+    toda la ruta.
+    """
     # Ordeno por posicion, desempatando por mayor radio
-    contratos_ordenados = sorted(contratos, key=lambda antena: (antena["pos"], -antena["radio"]))
-    solucion = [contratos_ordenados[0]]
+    antenas_ordenadas = sorted(antenas, key=lambda antena: (antena["pos"], -antena["radio"]))
+    solucion = [antenas_ordenadas[0]]
     posicion_actual = solucion[0]["pos"] + solucion[0]["radio"]
     quito_anterior = False
 
-    for antena in contratos_ordenados[1:]:
+    for antena in antenas_ordenadas[1:]:
         while cubre_anterior(antena, solucion):
             quito_anterior = True
             solucion.pop()
@@ -46,6 +60,10 @@ def buscar_solucion(contratos, kilometros):
     return solucion
 
 def comprobar_solucion(solucion, kilometros):
+    """
+    Recibe una solucion y los kilometros de longitud de la ruta.
+    Devuelve True si la solucion cubre los kilometros de ruta o False en caso contrario.
+    """
     posicion = 0
 
     for antena in solucion:
@@ -69,8 +87,8 @@ def main():
 
     kilometros = int(sys.argv[1])
     ruta_archivo = sys.argv[2]
-    contratos = leer_contratos(ruta_archivo)
-    solucion = buscar_solucion(contratos, kilometros)
+    antenas = leer_antenas(ruta_archivo)
+    solucion = buscar_solucion(antenas, kilometros)
 
     if comprobar_solucion(solucion, kilometros):
         print(list(map(lambda x: x['nro'], solucion)))
